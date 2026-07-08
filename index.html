@@ -4,8 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ParkBro — Know Before You Go. Park Before You Arrive.</title>
+  
+  <!-- Preconnecting Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  
+  <!-- Third-party Stylesheets (Leaflet Map & FontAwesome) -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   
@@ -14,7 +18,7 @@
       --vanilla: #F8F6EF;
       --vanilla-soft: #F1EEE3;
       --vanilla-mid: #E6E2D4;
-      --surface: rgba(255, 255, 255, 0.65);
+      --surface: rgba(255, 255, 255, 0.75);
       --surface-solid: #FFFFFF;
       --text: #141420;
       --text-secondary: #3D3D52;
@@ -35,7 +39,7 @@
       --shadow-sm: 0 2px 8px rgba(20, 20, 32, 0.04);
       --shadow-md: 0 8px 24px rgba(20, 20, 32, 0.06);
       --shadow-lg: 0 16px 40px rgba(20, 20, 32, 0.08);
-      --glass-border: rgba(255, 255, 255, 0.8);
+      --glass-border: rgba(255, 255, 255, 0.08); /* Sophisticated dark border */
       --border: rgba(20, 20, 32, 0.06);
     }
 
@@ -51,6 +55,7 @@
       position: relative;
     }
 
+    /* Grid backdrop overlay pattern */
     body::before {
       content: '';
       position: fixed;
@@ -66,7 +71,34 @@
     ::-webkit-scrollbar-thumb { background: var(--vanilla-mid); border-radius: 99px; }
     .hidden { display: none !important; }
 
-    /* Decorative Orbs */
+    .vehicle-selector-row {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      justify-content: center;
+    }
+    .vehicle-toggle-btn {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: #ffffff;
+      padding: 0.5rem 1.2rem;
+      border-radius: 99px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .vehicle-toggle-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #ffffff;
+      box-shadow: 0 0 12px var(--accent-glow);
+    }
+
+    /* Decorative Glowing Orbs */
     .bg-orb { position: fixed; border-radius: 50%; filter: blur(100px); pointer-events: none; z-index: 0; opacity: .25; }
     .bg-orb--1 { width: 500px; height: 500px; background: radial-gradient(circle, rgba(0, 201, 167, 0.25), transparent 70%); top: -150px; right: -100px; }
     .bg-orb--2 { width: 400px; height: 400px; background: radial-gradient(circle, rgba(232, 163, 23, 0.12), transparent 70%); bottom: -80px; left: -80px; }
@@ -76,8 +108,8 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 1rem 2.5rem;
-      background: var(--surface);
+      padding: 0.85rem 2.5rem;
+      background: rgba(17, 17, 27, 0.85); /* Seamless unified dark glassy background */
       backdrop-filter: blur(20px) saturate(1.4);
       -webkit-backdrop-filter: blur(20px) saturate(1.4);
       border-bottom: 1px solid var(--glass-border);
@@ -95,7 +127,7 @@
       align-items: center;
       gap: .6rem;
       text-decoration: none;
-      color: var(--text);
+      color: #FFFFFF; /* High contrast white logo */
       cursor: pointer;
     }
     .logo-icon {
@@ -111,16 +143,16 @@
       font-weight: 800;
       box-shadow: 0 3px 12px var(--accent-glow);
     }
-    .nav-links { display: flex; align-items: center; gap: 1.5rem; list-style: none; }
-    .nav-links a { text-decoration: none; color: var(--text-secondary); font-size: .9rem; font-weight: 500; transition: color .2s; position: relative; }
+    .nav-links { display: flex; align-items: center; gap: 2rem; list-style: none; }
+    .nav-links a { text-decoration: none; color: rgba(255, 255, 255, 0.85); font-size: .9rem; font-weight: 500; transition: color .2s; position: relative; }
     .nav-links a::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 2px; background: var(--accent); transition: width .25s ease; }
     .nav-links a:hover { color: var(--accent); }
     .nav-links a:hover::after { width: 100%; }
-    .nav-cta { padding: .6rem 1.2rem !important; font-size: .85rem !important; border-radius: var(--radius-xs) !important; }
-    .nav-toggle { display: none; background: none; border: none; cursor: pointer; padding: 6px; color: var(--text); }
+    .nav-cta { padding: .6rem 1.2rem !important; font-size: .85rem !important; border-radius: var(--radius-xs) !important; color: #fff !important; }
+    .nav-toggle { display: none; background: none; border: none; cursor: pointer; padding: 6px; color: #FFFFFF; }
 
     /* Profile Button Header */
-    .profile-nav-btn { display: flex; align-items: center; gap: 0.5rem; font-weight: 600; cursor: pointer; color: var(--text-secondary); transition: color 0.2s; background: none; border: none; font-size: 0.9rem; }
+    .profile-nav-btn { display: flex; align-items: center; gap: 0.5rem; font-weight: 600; cursor: pointer; color: rgba(255, 255, 255, 0.85); transition: color 0.2s; background: none; border: none; font-size: 0.9rem; }
     .profile-nav-btn:hover { color: var(--accent); }
 
     /* ── Buttons ── */
@@ -167,38 +199,113 @@
     .reveal { opacity: 0; transform: translateY(20px); transition: opacity .6s ease, transform .6s ease; }
     .reveal.visible { opacity: 1; transform: translateY(0); }
 
-    /* ══════════ HERO SECTION ══════════ */
-    .hero { padding: 6.5rem 2.5rem 5rem; text-align: center; position: relative; z-index: 1; overflow: hidden; }
-    .hero-ring { position: absolute; border-radius: 50%; pointer-events: none; }
-    .hero-ring--1 { width: 550px; height: 550px; border: 1px solid rgba(0, 201, 167, 0.08); top: 50%; left: 50%; transform: translate(-50%, -50%); animation: ringP 6s ease-in-out infinite; }
-    .hero-ring--2 { width: 800px; height: 800px; border: 1px dashed rgba(0, 201, 167, 0.05); top: 50%; left: 50%; transform: translate(-50%, -50%); animation: ringP 10s ease-in-out infinite reverse; }
+    /* ══════════ HERO SECTION (MIDDLE-CENTER ALIGNED) ══════════ */
+    .hero {
+      height: 75vh;
+      min-height: 520px;
+      max-height: 680px;
+      padding: 2rem 2.5rem;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+      overflow: hidden;
+      background: #111;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center; /* Dead-center vertical layout */
+    }
+    
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, .45);
+      z-index: 1;
+    }
+    
+    .hero-video-bg {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      min-width: 100%;
+      min-height: 100%;
+      width: auto;
+      height: auto;
+      transform: translate(-50%, -50%);
+      object-fit: cover;
+      z-index: 0;
+    }
+
+    /* Centered Inner Bundle Wrapper */
+    .hero-content-inner {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 800px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hero-ring { position: absolute; border-radius: 50%; pointer-events: none; z-index: 1; }
+    .hero-ring--1 { width: 550px; height: 550px; border: 1px solid rgba(0, 201, 167, 0.2); top: 50%; left: 50%; transform: translate(-50%, -50%); animation: ringP 6s ease-in-out infinite; }
+    .hero-ring--2 { width: 800px; height: 800px; border: 1px dashed rgba(0, 201, 167, 0.1); top: 50%; left: 50%; transform: translate(-50%, -50%); animation: ringP 10s ease-in-out infinite reverse; }
     @keyframes ringP { 0%, 100% { opacity: .4; transform: translate(-50%, -50%) scale(1); } 50% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); } }
 
-    .hero-badge { font-size: .82rem; color: var(--accent); background: var(--accent-soft); border: 1px solid rgba(0, 201, 167, 0.2); border-radius: 99px; padding: .5rem 1.2rem; display: inline-flex; align-items: center; gap: .5rem; margin-bottom: 1.8rem; position: relative; z-index: 2; font-weight: 600; }
-    .hero h1 { font-family: 'Space Grotesk', sans-serif; font-size: clamp(2.4rem, 6vw, 3.8rem); font-weight: 700; letter-spacing: -.035em; line-height: 1.15; margin-bottom: 1rem; position: relative; z-index: 2; }
+    .hero-badge { 
+      font-size: .82rem; 
+      color: #00E5BF; 
+      background: rgba(0, 201, 167, 0.15); 
+      border: 1px solid rgba(0, 201, 167, 0.35); 
+      border-radius: 99px; 
+      padding: .5rem 1.2rem; 
+      display: inline-flex; 
+      align-items: center; 
+      gap: .5rem; 
+      margin-top: 0; 
+      margin-bottom: 0.75rem; 
+      font-weight: 600; 
+    }
+    .hero h1 { 
+      font-family: 'Space Grotesk', sans-serif; 
+      font-size: clamp(2.4rem, 5.5vw, 3.5rem); 
+      font-weight: 700; 
+      letter-spacing: -.035em; 
+      line-height: 1.15; 
+      margin-bottom: .5rem; 
+      color: #FFFFFF;
+    }
     .hero h1 .aw { background: linear-gradient(135deg, var(--accent), #00E5BF); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-    .hero-tagline { color: var(--text-secondary); font-size: 1.15rem; font-weight: 400; max-width: 580px; margin: 0 auto 2.5rem; line-height: 1.7; position: relative; z-index: 2; }
+    .hero-tagline { 
+      color: rgba(255, 255, 255, 0.9); 
+      font-size: 1.1rem; 
+      font-weight: 400; 
+      max-width: 620px; 
+      margin: 0 auto 1.2rem; 
+      line-height: 1.7; 
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
     
-    .search-wrapper { max-width: 560px; margin: 0 auto; position: relative; display: flex; background: var(--surface-solid); border: 1px solid var(--border); border-radius: 18px; padding: 6px; box-shadow: var(--shadow-lg); transition: all .3s; z-index: 2; }
+    .search-wrapper { max-width: 580px; width: 100%; margin: .4rem auto 0; position: relative; display: flex; background: var(--surface-solid); border: 1px solid var(--border); border-radius: 18px; padding: 6px; box-shadow: var(--shadow-lg); transition: all .3s; }
     .search-wrapper:focus-within { border-color: var(--accent); box-shadow: var(--shadow-lg), 0 0 0 4px var(--accent-soft); }
     #search-input { flex: 1; padding: .9rem 1.2rem; border: none; border-radius: var(--radius-sm); font-size: 1.05rem; font-family: inherit; background: transparent; color: var(--text); outline: none; min-width: 0; }
     #search-input::placeholder { color: var(--muted); font-weight: 400; }
     
-    .hero-below { margin-top: 1.5rem; display: flex; align-items: center; justify-content: center; gap: 1rem; position: relative; z-index: 2; }
-    #recent-searches { display: flex; flex-wrap: wrap; gap: .6rem; justify-content: center; margin-top: 2rem; position: relative; z-index: 2; }
-    .chip { background: var(--surface-solid); border: 1px solid var(--border); border-radius: 999px; padding: .5rem 1.2rem; font-size: .85rem; cursor: pointer; color: var(--text-secondary); font-family: inherit; transition: all .25s ease; box-shadow: var(--shadow-sm); }
-    .chip:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); transform: translateY(-2px); }
+    .hero-below { margin-top: .75rem; display: flex; align-items: center; justify-content: center; gap: 1rem; }
+    #recent-searches { display: flex; flex-wrap: wrap; gap: .6rem; justify-content: center; margin-top: .8rem; }
+    .chip { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); border-radius: 999px; padding: .5rem 1.2rem; font-size: .85rem; cursor: pointer; color: #ffffff; font-family: inherit; transition: all .25s ease; backdrop-filter: blur(8px); }
+    .chip:hover { border-color: var(--accent); color: var(--accent); background: rgba(0, 201, 167, 0.15); transform: translateY(-2px); }
 
-    /* Floating geometric shapes */
-    .geo { position: absolute; pointer-events: none; opacity: .12; }
+    /* Floating geometric elements */
+    .geo { position: absolute; pointer-events: none; opacity: .2; z-index: 1; }
     .geo--1 { width: 44px; height: 44px; border: 2px solid var(--accent); border-radius: 10px; top: 15%; left: 8%; animation: geoRotate 24s linear infinite; }
     .geo--2 { width: 24px; height: 24px; border: 2px solid var(--warning); border-radius: 50%; top: 25%; right: 12%; animation: geoFloat 8s ease-in-out infinite; }
     .geo--3 { width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-bottom: 20px solid var(--accent); bottom: 18%; left: 15%; animation: geoRotate 18s linear infinite reverse; }
     @keyframes geoRotate { from { transform: rotate(0); } to { transform: rotate(360deg); } }
     @keyframes geoFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-16px); } }
-  </style>
 
-  <style>
     /* ══════════ APP BENEFITS (GRID) ══════════ */
     .benefits-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 1.5rem; }
     .benefit-card { background: var(--surface-solid); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; transition: all .3s cubic-bezier(0.16, 1, 0.3, 1); position: relative; overflow: hidden; }
@@ -294,11 +401,7 @@
 
     /* ══════════════════════════════════════════════════════
        DETAIL SHEET MODAL — FIXED SCROLL ARCHITECTURE
-       Industry-standard: Google Maps / Uber / Swiggy pattern
-       #detail-sheet        → overlay, flex align-end
-       .detail-content      → flex column, height:85vh, overflow:hidden
-       .sheet-header        → flex-shrink:0 (pinned, never scrolls)
-       .sheet-body          → flex:1, overflow-y:auto (ONLY scroll container)
+       Industry-standard layout with nested scrolling
        ══════════════════════════════════════════════════════ */
     #detail-sheet {
       position: fixed;
@@ -316,7 +419,6 @@
       width: 100%;
       max-width: 32rem;
       border-radius: 24px 24px 0 0;
-      /* KEY FIX: flex column layout, fixed height, NO overflow on this element */
       display: flex;
       flex-direction: column;
       height: 85vh;
@@ -325,7 +427,6 @@
       box-shadow: 0 -12px 48px rgba(20, 20, 32, 0.12);
       position: relative;
     }
-    /* Drag handle — now part of sheet-header, stays pinned */
     .sheet-header {
       flex-shrink: 0;
       padding: 1.5rem 2rem 0;
@@ -344,7 +445,6 @@
       font-weight: 700;
       margin-top: 0;
     }
-    /* KEY FIX: This is the ONLY element that scrolls */
     .sheet-body {
       flex: 1;
       overflow-y: auto;
@@ -355,7 +455,7 @@
       padding: 0 2rem 2.5rem;
     }
 
-    .detail-info-row { display: flex; align-items: center; gap: .75rem; margin-top: .8rem; padding: .8rem; background: var(--vanilla); border-radius: var(--radius-sm); border: 1px solid var(--border); border: 1px solid var(--border); }
+    .detail-info-row { display: flex; align-items: center; gap: .75rem; margin-top: .8rem; padding: .8rem; background: var(--vanilla); border-radius: var(--radius-sm); border: 1px solid var(--border); }
     .info-icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: .9rem; flex-shrink: 0; }
     .info-icon--price { background: var(--accent-soft); color: var(--accent); }
     .info-icon--spots { background: var(--accent-soft); color: var(--accent); }
@@ -406,6 +506,7 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
+    /* Scalloped Premium Ticket layout */
     .ticket-outer-canvas {
       background: #7a7a90;
       padding: 2rem 1.2rem;
@@ -572,51 +673,61 @@
     .auth-tab { padding: 0.5rem 1rem; font-weight: 600; cursor: pointer; color: var(--muted); border-bottom: 2px solid transparent; }
     .auth-tab.active { color: var(--accent); border-color: var(--accent); }
 
-    /* SSO Integration Styles */
-    .sso-divider {
+    /* Social Authentications Divider and Button group */
+    .social-auth-divider {
       display: flex;
       align-items: center;
       text-align: center;
       margin: 1.25rem 0;
       color: var(--muted);
-      font-size: 0.78rem;
+      font-size: 0.8rem;
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.05em;
     }
-    .sso-divider::before, .sso-divider::after {
+    .social-auth-divider::before,
+    .social-auth-divider::after {
       content: '';
       flex: 1;
       border-bottom: 1px solid var(--border);
     }
-    .sso-divider:not(:empty)::before { margin-right: .75rem; }
-    .sso-divider:not(:empty)::after { margin-left: .75rem; }
-
-    .sso-buttons {
+    .social-auth-divider:not(:empty)::before {
+      margin-right: .75rem;
+    }
+    .social-auth-divider:not(:empty)::after {
+      margin-left: .75rem;
+    }
+    .social-btn-group {
       display: flex;
       flex-direction: column;
       gap: 0.65rem;
+      margin-top: 0.75rem;
     }
-    .btn-sso {
-      background: var(--surface-solid);
+    .btn-social {
+      background: var(--vanilla-soft);
       border: 1px solid var(--border);
       color: var(--text-secondary);
-      width: 100%;
-      min-height: 42px;
-      font-size: 0.85rem;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 0.88rem;
+      display: inline-flex;
+      align-items: center;
       justify-content: center;
-      font-weight: 500;
+      gap: 0.6rem;
+      cursor: pointer;
+      min-height: 44px;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      width: 100%;
+    }
+    .btn-social:hover {
+      background: var(--surface-solid);
+      border-color: var(--accent);
+      color: var(--accent);
+      transform: translateY(-1.5px);
       box-shadow: var(--shadow-sm);
     }
-    .btn-sso:hover {
-      background: var(--vanilla-soft);
-      border-color: var(--muted);
-      transform: translateY(-1px);
-    }
-    #google-sso-wrapper {
-      width: 100%;
-      display: flex;
-      justify-content: center;
+    .btn-social i {
+      font-size: 1.05rem;
     }
 
     /* Drawer Styles */
@@ -625,15 +736,60 @@
     .drawer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem; }
     .drawer-header h3 { font-family: 'Space Grotesk', sans-serif; font-size: 1.25rem; }
 
-    /* Developer Hub Floater */
-    .dev-floater { position: fixed; bottom: 20px; left: 20px; width: 44px; height: 44px; border-radius: 50%; background: #12121e; color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: var(--shadow-lg); z-index: 9999; border: 1px solid rgba(255,255,255,0.1); font-size: 1.1rem; transition: transform 0.2s; }
-    .dev-floater:hover { transform: scale(1.1); color: var(--accent); }
-
     /* Inline Service Cards style */
     .service-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-top: 1rem; }
     .service-item-card { border: 1px solid var(--border); border-radius: var(--radius-xs); padding: 0.75rem; display: flex; align-items: center; gap: 0.75rem; cursor: pointer; transition: all 0.2s; background: var(--vanilla); }
     .service-item-card:hover { border-color: var(--accent); background: var(--surface-solid); }
     .service-item-card.selected { border-color: var(--accent); background: var(--accent-soft); }
+
+    /* Premium Parking Gallery Visuals styling */
+    .spot-image-card {
+      position: relative;
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      height: 240px;
+      border: 1px solid var(--border);
+    }
+    .spot-image-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .spot-image-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--accent);
+    }
+    .spot-image-card:hover img {
+      transform: scale(1.08);
+    }
+    .spot-image-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(18, 18, 30, 0.9) 0%, rgba(18, 18, 30, 0.4) 50%, transparent 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 1.25rem;
+      color: #FFFFFF;
+      z-index: 2;
+    }
+    .spot-image-overlay h4 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 0.2rem;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+    }
+    .spot-image-overlay p {
+      font-size: 0.82rem;
+      opacity: 0.85;
+      line-height: 1.4;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+    }
 
     /* FOOTER */
     footer { padding: 4rem 2.5rem 2rem; border-top: 1px solid var(--border); background: var(--surface); position: relative; z-index: 1; }
@@ -664,12 +820,11 @@
       .nav-toggle { display: block; }
       header { padding: 1rem 1.5rem; }
       .section { padding: 4rem 1.5rem; }
-      .hero { padding: 5rem 1.5rem 3.5rem; }
+      .hero { padding: 4rem 1.5rem 4rem; height: auto; min-height: auto; }
       .hero h1 { font-size: 2.1rem; }
       .benefits-grid { grid-template-columns: 1fr; }
       #view-results { grid-template-columns: 1fr; grid-template-rows: 40vh 1fr; }
       .results-panel { border-left: none; border-top: 1px solid var(--border); }
-      /* Mobile: sheet takes more height, adjust padding */
       .detail-content { height: 90vh; max-height: 90vh; }
       .sheet-header { padding: 1.2rem 1.5rem 0; }
       .sheet-body { padding: 0 1.5rem 2rem; }
@@ -696,10 +851,10 @@
         <li><a href="#how-it-works">How It Works</a></li>
         <li><a href="#host">Host Your Space</a></li>
         <li><button class="profile-nav-btn" id="open-profile-btn"><i class="fa-regular fa-user-circle" style="font-size:1.25rem;"></i> <span id="nav-profile-name">My Console</span></button></li>
-        <li><a href="#hero" class="btn btn-primary nav-cta">Find Parking Now</a></li>
+        <li><a href="#hero" class="btn btn-primary nav-cta">Find Space Now</a></li>
       </ul>
     </nav>
-    <button id="back-btn" class="btn btn-text hidden" type="button">
+    <button id="back-btn" class="btn btn-text hidden" type="button" style="color: #ffffff;">
       <i class="fa-solid fa-arrow-left" style="font-size: .8rem"></i> Back to Home
     </button>
   </header>
@@ -708,69 +863,100 @@
   <div id="view-home">
     
     <section class="hero" id="hero">
+      <video class="hero-video-bg" autoplay loop muted playsinline poster="https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?q=80&w=1200&auto=format&fit=crop">
+        <!-- Optimized free traffic stock clip -->
+        <source src="Untitled design (3).mp4" type="video/mp4" />
+      </video>
       <div class="hero-ring hero-ring--1"></div>
       <div class="hero-ring hero-ring--2"></div>
       <div class="geo geo--1"></div>
       <div class="geo geo--2"></div>
       <div class="geo geo--3"></div>
       
-      <div class="hero-badge reveal">
-        <i class="fa-solid fa-signal" style="color:var(--accent);"></i> Live Platform Active &middot; Kolkata Hub Ready
+      <div class="hero-content-inner">
+        <div class="hero-badge reveal">
+          <i class="fa-solid fa-handshake" style="color:var(--accent);"></i> Verified Mediator &middot; Connecting Drivers & Hosts
+        </div>
+        <h1 class="reveal">Know Before You Go.<br><span class="aw">Park Cars & Bikes Securely.</span></h1>
+        <p class="hero-tagline reveal">Connecting Kolkata's car & bike owners with local parking space hosts. Instantly book verified slots near your destination.</p>
+        
+        <form id="search-form" class="search-wrapper reveal">
+          <input id="search-input" type="search" placeholder="Enter landmark in Kolkata (e.g. Sector V, Park Street)..." aria-label="Search parking location" />
+          <button class="btn btn-primary" type="submit">Search Spots</button>
+        </form>
+        
+        <div class="hero-below reveal">
+          <button id="use-location" class="btn btn-text" type="button" style="color: #00C9A7;">
+            <i class="fa-solid fa-crosshairs" style="font-size: .85rem"></i> Search Near Me
+          </button>
+        </div>
+        <div id="recent-searches"></div>
       </div>
-      <h1 class="reveal">Know Before You Go.<br><span class="aw">Park Before You Arrive.</span></h1>
-      <p class="hero-tagline reveal">Instantly search, compare, reserve, and navigate to guaranteed parking spaces across Kolkata's busiest zones.</p>
-      
-      <form id="search-form" class="search-wrapper reveal">
-        <input id="search-input" type="search" placeholder="Enter landmark or area in Kolkata (e.g. Sector V, Park Street)..." aria-label="Search parking location" />
-        <button class="btn btn-primary" type="submit">Search Spots</button>
-      </form>
-      
-      <div class="hero-below reveal">
-        <button id="use-location" class="btn btn-text" type="button">
-          <i class="fa-solid fa-crosshairs" style="font-size: .85rem"></i> Use My Location
-        </button>
-      </div>
-      <div id="recent-searches"></div>
     </section>
 
     <section class="section" id="benefits">
       <div class="section-container">
         <div class="text-center reveal">
           <p class="section-label">Features</p>
-          <h2 class="section-title">Parking Solved for Modern Drivers</h2>
-          <p class="section-desc">Experience a stress-free commute. Join thousands of daily Kolkata drivers saving time and fuel with ParkBro.</p>
+          <h2 class="section-title">The Parking Marketplace Made for You</h2>
+          <p class="section-desc">ParkBro bridges the gap between vehicle owners and space providers. Securely book garage space or rent out your vacant spot.</p>
+        </div>
+
+        <!-- Live Parking Showcase Gallery -->
+        <div class="gallery-grid reveal" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 3.5rem;">
+          <div class="spot-image-card">
+            <img src="https://images.unsplash.com/photo-1573348722427-f1d6819fdf98?auto=format&fit=crop&w=600&q=80" alt="Modern Multi-Level Parking" onerror="this.src='https://placehold.co/600x400/1e1e2d/fff?text=Multi-Level+Parking'" />
+            <div class="spot-image-overlay">
+              <h4>Commercial Garages</h4>
+              <p>Verified commercial lots hosting spacious bays for both four and two-wheelers.</p>
+            </div>
+          </div>
+          <div class="spot-image-card">
+            <img src="michael-fousert-a7WIJiOZDO0-unsplash.jpg" alt="Secure Garage Layout" onerror="this.src='https://placehold.co/600x400/1e1e2d/fff?text=Secure+Garage'" />
+            <div class="spot-image-overlay">
+              <h4>Secure Garages</h4>
+              <p>Homeowners and private hosts renting out their secure, monitored garage bays at budget rates.</p>
+            </div>
+          </div>
+          <div class="spot-image-card">
+            <img src="https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&w=600&q=80" alt="Motorbike & Scooter Bays" onerror="this.src='https://placehold.co/600x400/1e1e2d/fff?text=Bike+Parking+Bays'" />
+            <div class="spot-image-overlay">
+              <h4>Motorbike Bays</h4>
+              <p>Dedicated secure zones specifically optimized for scooters, bikes, and motorcycles.</p>
+            </div>
+          </div>
         </div>
         
         <div class="benefits-grid">
           <div class="benefit-card reveal">
-            <div class="benefit-icon"><i class="fa-solid fa-map-pin"></i></div>
-            <h3>Guaranteed Space</h3>
-            <p>Your reserved slot is locked and waiting for you. Arrive anytime inside your booked slot — no hassle, zero stress.</p>
+            <div class="benefit-icon"><i class="fa-solid fa-handshake"></i></div>
+            <h3>Direct Peer-to-Peer Booking</h3>
+            <p>Skip the brokers. ParkBro acts as a neutral mediator connecting drivers directly to private parking lot hosts.</p>
           </div>
           <div class="benefit-card reveal">
-            <div class="benefit-icon"><i class="fa-solid fa-bolt"></i></div>
-            <h3>Real-Time Updates</h3>
-            <p>Track actual live space occupancy as it changes. Avoid entering lots that are already at maximum capacity.</p>
+            <div class="benefit-icon"><i class="fa-solid fa-motorcycle"></i></div>
+            <h3>Cars & Bikes Welcomed</h3>
+            <p>From large SUVs to nimble motorcycles and scooters, find and filter slots that fit your specific ride perfectly.</p>
           </div>
           <div class="benefit-card reveal">
             <div class="benefit-icon"><i class="fa-solid fa-credit-card"></i></div>
-            <h3>Razorpay Payment Integration</h3>
-            <p>Pre-pay your parking fee digitally via UPI, card, or net banking. No cash negotiations, no extra overheads.</p>
-          </div>
-          <div class="benefit-card reveal">
-            <div class="benefit-icon"><i class="fa-solid fa-charging-station"></i></div>
-            <h3>EV and Garage Filters</h3>
-            <p>Looking for a covered spot or need to top up your battery? Effortlessly filter spaces for EV chargers and covered roofing.</p>
-          </div>
-          <div class="benefit-card reveal">
-            <div class="benefit-icon"><i class="fa-solid fa-diamond-turn-right"></i></div>
-            <h3>Turn-by-Turn Navigation</h3>
-            <p>Get integrated GPS guidance straight to the precise entry gate of your chosen garage or parking lot.</p>
+            <h3>Integrated Payment Mediation</h3>
+            <p>We process secure online bookings. Lot owners get paid automatically, while drivers enjoy safe, refundable transactions.</p>
           </div>
           <div class="benefit-card reveal">
             <div class="benefit-icon"><i class="fa-solid fa-shield-halved"></i></div>
-            <h3>Safe & Insured Spaces</h3>
-            <p>We work exclusively with verified lot operators and trusted hosts to ensure security, CCTV coverage, and proper lighting.</p>
+            <h3>Secure Host Verification</h3>
+            <p>All hosting lots, driveways, and underground garages are thoroughly checked for safety, CCTV coverage, and physical barriers.</p>
+          </div>
+          <div class="benefit-card reveal">
+            <div class="benefit-icon"><i class="fa-solid fa-bell"></i></div>
+            <h3>Real-Time Spot Status</h3>
+            <p>Space owners update their slot availability live, ensuring you never drive towards an occupied spot.</p>
+          </div>
+          <div class="benefit-card reveal">
+            <div class="benefit-icon"><i class="fa-solid fa-file-invoice"></i></div>
+            <h3>Guaranteed Disputes Shield</h3>
+            <p>Enjoy absolute booking guarantees. In the rare event a spot isn't free, we mediate quick refunds or swap you to nearby slots.</p>
           </div>
         </div>
       </div>
@@ -781,7 +967,7 @@
         <div class="how-section">
           <div class="text-center reveal">
             <p class="section-label">How it Works</p>
-            <h2 class="section-title">Reserve in Under 60 Seconds</h2>
+            <h2 class="section-title">The Mediator Marketplace Loop</h2>
           </div>
           
           <div class="how-grid">
@@ -790,18 +976,18 @@
             
             <div class="how-card reveal">
               <div class="how-step-num">1</div>
-              <h3>Search Destination</h3>
-              <p>Type your target landmark or location to pull up verified spaces nearby.</p>
+              <h3>Hosts List Empty Slots</h3>
+              <p>Lot owners and home hosts list available driveways and spots on the platform.</p>
             </div>
             <div class="how-card reveal">
               <div class="how-step-num">2</div>
-              <h3>Reserve and Pay</h3>
-              <p>Pick your date, duration, input vehicle info, and book instantly online.</p>
+              <h3>Drivers Choose & Pay</h3>
+              <p>Car & bike owners find matching slots, reserve, and make secure pre-payments.</p>
             </div>
             <div class="how-card reveal">
               <div class="how-step-num">3</div>
-              <h3>Drive In & Park</h3>
-              <p>Receive an instant digital ticket with a secure entry QR code. Scan and park!</p>
+              <h3>Hassle-Free Check In</h3>
+              <p>Scan your booking QR code on arrival. The host is paid automatically via ParkBro!</p>
             </div>
           </div>
         </div>
@@ -812,9 +998,9 @@
       <div class="section-container">
         <div class="host-section">
           <div class="reveal">
-            <p class="section-label">List Your Space</p>
-            <h2 class="section-title">Turn Your Empty Parking Space into Passive Revenue</h2>
-            <p class="section-desc">Have a residential driveway, empty garage, commercial lot, or unused driveway space in Kolkata? List it on ParkBro for free and let local commuters reserve it when you are not using it.</p>
+            <p class="section-label">Become a Host</p>
+            <h2 class="section-title">Rent out your empty car or bike spot to commuters</h2>
+            <p class="section-desc">Join ParkBro's network as a partner lot owner. Whether you own a residential driveway, empty garage bay, commercial lot, or dedicated motorbike space, let local commuters list & rent it when you are away.</p>
             
             <ul style="list-style: none; display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem;">
               <li style="display: flex; align-items: center; gap: .75rem; font-weight: 500;">
@@ -868,7 +1054,7 @@
         <div class="app-cta-box reveal">
           <div>
             <h2>Guaranteed Parking in Your Pocket</h2>
-            <p>Download the free ParkBro app on your iOS or Android mobile device to manage reservations on the fly, auto-renew parking meters, and get smart traffic routing reminders.</p>
+            <p>Download the free ParkBro mediator app to book spot rentals on the move, communicate directly with your parking host, and manage slots live.</p>
             <div class="store-badges">
               <a href="#" class="store-badge" onclick="event.preventDefault(); toast('App downloads live soon!')">
                 <i class="fa-brands fa-apple"></i>
@@ -915,7 +1101,7 @@
       <div class="footer-grid">
         <div>
           <span class="logo" style="cursor: default;"><span class="logo-icon">PB</span>ParkBro</span>
-          <p class="footer-brand p">India's modern smart parking locator and reservation ecosystem. Book guaranteed space anytime.</p>
+          <p class="footer-brand p">India's premium marketplace mediator connecting car & bike drivers with local space and lot owners.</p>
           <div class="footer-social">
             <a href="#" aria-label="X"><i class="fa-brands fa-x-twitter"></i></a>
             <a href="#" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
@@ -949,7 +1135,7 @@
         </div>
       </div>
       <div class="footer-bottom">
-        <span>&copy; 2025 ParkBro Technologies Pvt. Ltd. All rights reserved.</span>
+        <span>&copy; 2026 ParkBro Technologies Pvt. Ltd. All rights reserved.</span>
         <span>Made with <i class="fa-solid fa-heart" style="color:var(--accent);font-size:.7rem;"></i> in Kolkata</span>
       </div>
     </footer>
@@ -960,9 +1146,19 @@
     <div id="map"></div>
     <div class="results-panel">
       <div class="results-header">
-        <h2>Nearby Parking Spots</h2>
+        <div style="margin-bottom: 0.75rem;">
+          <button id="results-back-btn" class="btn btn-secondary" type="button" style="padding: 0.4rem 0.8rem; min-height: 34px; font-size: 0.8rem; gap: 0.4rem; border-radius: var(--radius-xs);">
+            <i class="fa-solid fa-arrow-left"></i> Back to Home Screen
+          </button>
+        </div>
+        <h2>Nearby Spaces</h2>
         <div class="filters">
           <label><input type="checkbox" id="available-only" /> Available Only</label>
+          <select id="vehicle-type-filter" style="background: var(--surface-solid); border: 1px solid var(--border); border-radius: var(--radius-xs); padding: .3rem .5rem; font-size: .8rem; font-family: inherit; color: var(--text-secondary); cursor: pointer;">
+            <option value="all">All Vehicle Spaces</option>
+            <option value="car">🚗 Cars Only</option>
+            <option value="bike">🏍️ Bikes/Scooters Only</option>
+          </select>
           <select id="sort-select">
             <option value="distance">Sort by Distance</option>
             <option value="price">Sort by Price</option>
@@ -977,12 +1173,11 @@
   <!-- ═══════ DETAIL SHEET MODAL ═══════ -->
   <div id="detail-sheet" class="hidden">
     <div class="detail-content">
-      <!-- SHEET HEADER: pinned, never scrolls -->
       <div class="sheet-header">
         <div class="sheet-handle"></div>
         <h2 id="detail-name">Parking Name</h2>
       </div>
-      <!-- SHEET BODY: the ONLY scrollable element -->
+      
       <div class="sheet-body" id="sheet-body">
         <div id="detail-address" style="color:var(--muted);font-size:.9rem;margin-top:.4rem;"></div>
 
@@ -1007,16 +1202,23 @@
           <div class="service-grid" id="service-grid"></div>
         </div>
 
-        <!-- Book Space Button -->
+        <!-- Book Space Buttons -->
         <div class="detail-actions" id="detail-actions-top">
           <button class="btn btn-primary" id="book-space-btn" type="button"><i class="fa-solid fa-ticket"></i> Book Space</button>
           <button class="btn btn-outline" id="navigate-btn" type="button"><i class="fa-solid fa-diamond-turn-right"></i> Navigate</button>
         </div>
 
-        <!-- ═══ BOOKING WIZARD ═══ -->
+        <!-- ═══ COMPLETE INTERACTIVE BOOKING WIZARD ═══ -->
         <div id="booking-wizard" class="hidden">
           <div class="booking-wizard-step" id="bw-step-1">
-            <h3 style="font-family:'Space Grotesk',sans-serif;font-size:1.05rem;margin-bottom:1rem;">Booking Duration</h3>
+            <h3 style="font-family:'Space Grotesk',sans-serif;font-size:1.05rem;margin-bottom:1rem;">Booking Details</h3>
+            <div class="form-group">
+              <label for="checkout-vehicle-type">Booking Ride For</label>
+              <select class="form-control" id="checkout-vehicle-type">
+                <option value="car">Car 🚗</option>
+                <option value="bike">Bike / Scooter 🏍️</option>
+              </select>
+            </div>
             <div class="form-group">
               <label for="book-date">Date</label>
               <input type="date" class="form-control" id="book-date" />
@@ -1044,7 +1246,7 @@
               <div class="pay-btn" data-method="netbanking"><i class="fa-solid fa-building-columns"></i><br>Net Banking</div>
             </div>
 
-            <!-- Dynamic Virtual Card Visual -->
+            <!-- Dynamic Credit Card Visual Form -->
             <div id="card-visual" class="credit-card-view hidden">
               <div style="display:flex;justify-content:space-between;align-items:flex-start;">
                 <div class="card-chip"></div>
@@ -1056,8 +1258,18 @@
                 <div><div style="font-size:.55rem;opacity:.6;">EXPIRES</div><div id="card-exp-display">MM/YY</div></div>
               </div>
             </div>
+            
+            <div id="card-input-fields" class="hidden" style="margin-top: 1rem;">
+              <div class="form-group">
+                <input type="text" id="card-holder-input" class="form-control" placeholder="Cardholder Name" />
+              </div>
+              <div class="form-group" style="display: grid; grid-template-columns: 2fr 1fr; gap: 0.5rem;">
+                <input type="text" id="card-number-input" class="form-control" placeholder="Card Number" maxlength="19" />
+                <input type="text" id="card-expiry-input" class="form-control" placeholder="MM/YY" maxlength="5" />
+              </div>
+            </div>
 
-            <!-- Payment Preview -->
+            <!-- Dynamic Price Estimator Receipt Summary -->
             <div id="payment-preview" style="background:var(--vanilla);border-radius:var(--radius-sm);padding:1rem;margin-top:1rem;border:1px solid var(--border);">
               <div style="display:flex;justify-content:space-between;font-size:.85rem;margin-bottom:.4rem;"><span style="color:var(--muted);">Parking Fee</span><span id="pp-fee">--</span></div>
               <div style="display:flex;justify-content:space-between;font-size:.85rem;margin-bottom:.4rem;"><span style="color:var(--muted);">Platform Fee</span><span id="pp-platform">&#8377;5</span></div>
@@ -1071,7 +1283,7 @@
             </div>
           </div>
 
-          <!-- OTP Verification Step -->
+          <!-- Simulated OTP Checkout Screen -->
           <div class="booking-wizard-step hidden" id="bw-step-otp">
             <h3 style="font-family:'Space Grotesk',sans-serif;font-size:1.05rem;margin-bottom:.5rem;text-align:center;">Verify OTP</h3>
             <p style="text-align:center;color:var(--muted);font-size:.85rem;margin-bottom:1.5rem;">Enter the 4-digit code sent to your registered mobile</p>
@@ -1085,16 +1297,16 @@
             <p style="text-align:center;margin-top:.8rem;font-size:.8rem;color:var(--muted);">Didn't receive? <button class="btn btn-text" style="font-size:.8rem;" id="resend-otp-btn" type="button">Resend OTP</button></p>
           </div>
 
-          <!-- Payment Processing Spinner -->
+          <!-- Loading Spinner -->
           <div class="booking-wizard-step hidden" id="bw-step-processing">
             <div class="spinner-box">
               <div class="custom-loader"></div>
-              <div style="font-family:'Space Grotesk',sans-serif;font-size:1.05rem;font-weight:600;">Processing Payment...</div>
+              <div style="font-family:'Space Grotesk',sans-serif;font-size:1.05rem;font-weight:600;" id="processing-msg">Processing Payment...</div>
               <div style="color:var(--muted);font-size:.85rem;margin-top:.3rem;">Please do not close this window</div>
             </div>
           </div>
 
-          <!-- Payment Success -->
+          <!-- Success Animation -->
           <div class="booking-wizard-step hidden" id="bw-step-success">
             <div style="text-align:center;padding:1rem 0;">
               <div style="width:64px;height:64px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin:0 auto 1rem;"><i class="fa-solid fa-circle-check"></i></div>
@@ -1103,7 +1315,7 @@
             </div>
           </div>
 
-          <!-- QR Ticket -->
+          <!-- Elegant Receipt Digital Ticket -->
           <div class="booking-wizard-step hidden" id="bw-step-ticket">
             <div style="text-align:center;margin-bottom:1rem;">
               <h3 style="font-family:'Space Grotesk',sans-serif;font-size:1.05rem;">Your Parking Ticket</h3>
@@ -1114,7 +1326,7 @@
             </div>
             <div id="ticket-id-display" style="text-align:center;font-family:'Space Grotesk',sans-serif;font-size:.85rem;color:var(--muted);margin-bottom:1rem;"></div>
 
-            <!-- Receipt Visual -->
+            <!-- Receipt Layout View -->
             <div class="ticket-outer-canvas">
               <div class="receipt-visual" id="receipt-visual-card">
                 <div class="ticket-notch-l"></div>
@@ -1176,7 +1388,7 @@
         <div class="auth-tab" data-tab="signup">Sign Up</div>
       </div>
       
-      <!-- Password / Custom Auth Block -->
+      <!-- Login Body -->
       <div id="auth-login-form">
         <div class="form-group">
           <label for="login-phone">Mobile Number</label>
@@ -1187,8 +1399,20 @@
           <input type="password" class="form-control" id="login-pass" placeholder="Enter password" />
         </div>
         <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" id="login-btn" type="button">Login</button>
+        
+        <!-- Social Login additions -->
+        <div class="social-auth-divider">Or continue with</div>
+        <div class="social-btn-group">
+          <button class="btn-social google-auth-btn" type="button">
+            <i class="fa-brands fa-google" style="color: #4285F4;"></i> Continue with Google
+          </button>
+          <button class="btn-social apple-auth-btn" type="button">
+            <i class="fa-brands fa-apple" style="color: #000000;"></i> Continue with Apple
+          </button>
+        </div>
       </div>
-
+      
+      <!-- Signup Body -->
       <div id="auth-signup-form" class="hidden">
         <div class="form-group">
           <label for="signup-name">Full Name</label>
@@ -1203,19 +1427,17 @@
           <input type="password" class="form-control" id="signup-pass" placeholder="Min 6 characters" />
         </div>
         <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" id="signup-btn" type="button">Create Account</button>
-      </div>
-
-      <!-- Third-Party Federated SSO Authentication Module -->
-      <div class="sso-divider">Or continue with</div>
-      <div class="sso-buttons">
-        <div id="google-sso-wrapper">
-          <button class="btn btn-sso" id="google-sso-btn" type="button">
-            <i class="fa-brands fa-google" style="color: #ea4335; margin-right: 8px;"></i> Continue with Google
+        
+        <!-- Social Signup additions -->
+        <div class="social-auth-divider">Or continue with</div>
+        <div class="social-btn-group">
+          <button class="btn-social google-auth-btn" type="button">
+            <i class="fa-brands fa-google" style="color: #4285F4;"></i> Continue with Google
+          </button>
+          <button class="btn-social apple-auth-btn" type="button">
+            <i class="fa-brands fa-apple" style="color: #000000;"></i> Continue with Apple
           </button>
         </div>
-        <button class="btn btn-sso" id="apple-sso-btn" type="button">
-          <i class="fa-brands fa-apple" style="color: #000000; margin-right: 8px;"></i> Continue with Apple
-        </button>
       </div>
     </div>
   </div>
@@ -1228,7 +1450,7 @@
     </div>
     <div id="profile-content">
       <div style="text-align:center;padding:1rem 0 1.5rem;">
-        <div style="width:72px;height:72px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:1.8rem;margin:0 auto 1rem;font-weight:700;" id="profile-avatar">?</div>
+        <div style="width:72px;height:72px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:1.8rem;margin:0 auto 1rem;font-weight:700;">?</div>
         <div style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:600;" id="profile-display-name">Guest User</div>
         <div style="color:var(--muted);font-size:.85rem;" id="profile-display-phone">Not logged in</div>
       </div>
@@ -1246,66 +1468,50 @@
   </div>
   <div id="drawer-backdrop" class="hidden" style="position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:1400;"></div>
 
-  <!-- Developer Hub Floater -->
-  <button class="dev-floater" id="dev-floater" type="button" title="Developer Console"><i class="fa-solid fa-terminal"></i></button>
-
-  <!-- ═══════ JAVASCRIPT ═══════ -->
+  <!-- ═══════ JAVASCRIPT LOGIC ═══════ -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <!-- html2canvas library for JPG export functionality -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   
-  <!-- Official Client SSO Authentication SDKs -->
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <script src="https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js" async defer></script>
-
   <script>
-    /* ═══════════════════════════════════════════════
-       ParkBro — Complete Application Logic
-       ═══════════════════════════════════════════════ */
-
-    // ── SSO API Developer Keys (Swap with your live credentials) ──
-    const GOOGLE_CLIENT_ID = "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com";
-    const APPLE_CLIENT_ID = "YOUR_APPLE_CLIENT_ID";
-    const APPLE_REDIRECT_URI = "https://yourdomain.com/apple-callback";
-
-    // ── Parking Data ──
+    // ── Parking Spot Models (With vehicle supported properties for mediator platform logic) ──
     const parkingSpots = [
-      { id: 1, name: "Sector V Multi-Level Parking", address: "Block EP, Sector V, Salt Lake, Kolkata 700091", lat: 22.5726, lng: 88.4241, rate: 30, rateUnit: "hr", total: 120, available: 45, hours: "6:00 AM – 11:00 PM", tags: ["covered", "cctv", "ev-charging", "24x7-security"], services: [{name:"Car Wash",price:150,icon:"fa-solid fa-droplet"},{name:"Tyre Check",price:80,icon:"fa-solid fa-circle-dot"},{name:"Battery Jumpstart",price:200,icon:"fa-solid fa-car-battery"},{name:"Vacuum Clean",price:100,icon:"fa-solid fa-wind"}] },
-      { id: 2, name: "Park Street Underground Garage", address: "7 Park Street, Kolkata 700016", lat: 22.5531, lng: 88.3508, rate: 50, rateUnit: "hr", total: 80, available: 12, hours: "8:00 AM – 10:00 PM", tags: ["underground", "valet", "covered"], services: [{name:"Car Wash",price:200,icon:"fa-solid fa-droplet"},{name:"Valet Parking",price:100,icon:"fa-solid fa-user-tie"}] },
-      { id: 3, name: "New Market Open Lot", address: "Lindsay Street, Kolkata 700087", lat: 22.5670, lng: 88.3498, rate: 20, rateUnit: "hr", total: 60, available: 0, hours: "7:00 AM – 9:00 PM", tags: ["open", "budget"], services: [] },
-      { id: 4, name: "Camac Street Smart Parking", address: "28A Camac Street, Kolkata 700016", lat: 22.5515, lng: 88.3540, rate: 40, rateUnit: "hr", total: 45, available: 30, hours: "7:00 AM – 11:00 PM", tags: ["covered", "ev-charging", "cctv"], services: [{name:"EV Charging",price:0,icon:"fa-solid fa-charging-station"},{name:"Car Wash",price:180,icon:"fa-solid fa-droplet"}] },
-      { id: 5, name: "Salt Lake Stadium Parking", address: "Salt Lake Stadium, Sector 16, Kolkata 700091", lat: 22.5688, lng: 88.4125, rate: 15, rateUnit: "hr", total: 200, available: 180, hours: "5:00 AM – 12:00 AM", tags: ["open", "large-vehicles", "event-parking"], services: [] },
-      { id: 6, name: "City Centre Mall Parking", address: "City Centre Salt Lake, Sector 1B, Kolkata 700064", lat: 22.5745, lng: 88.4050, rate: 35, rateUnit: "hr", total: 150, available: 65, hours: "9:00 AM – 10:00 PM", tags: ["covered", "mall", "cctv", "ev-charging"], services: [{name:"Car Wash",price:250,icon:"fa-solid fa-droplet"},{name:"Tyre Check",price:100,icon:"fa-solid fa-circle-dot"}] },
-      { id: 7, name: "Howrah Station Parking Complex", address: "Howrah Station, Howrah 711101", lat: 22.5839, lng: 88.3425, rate: 25, rateUnit: "hr", total: 300, available: 90, hours: "24 Hours", tags: ["open", "24x7-security", "large-vehicles"], services: [{name:"Battery Jumpstart",price:250,icon:"fa-solid fa-car-battery"}] },
-      { id: 8, name: "Exide Park & Ride", address: "Exide More, Chowringhee Road, Kolkata 700020", lat: 22.5595, lng: 88.3490, rate: 45, rateUnit: "hr", total: 55, available: 5, hours: "6:00 AM – 10:00 PM", tags: ["covered", "cctv", "valet"], services: [{name:"Valet Parking",price:150,icon:"fa-solid fa-user-tie"},{name:"Car Wash",price:220,icon:"fa-solid fa-droplet"}] }
+      { id: 1, name: "Sector V Multi-Level Parking", address: "Block EP, Sector V, Salt Lake, Kolkata 700091", lat: 22.5726, lng: 88.4241, rate: 30, rateUnit: "hr", total: 120, available: 45, hours: "6:00 AM – 11:00 PM", tags: ["covered", "cctv", "24x7-security"], vehiclesSupported: ["car", "bike"], services: [{name:"Car Wash",price:150,icon:"fa-solid fa-droplet"},{name:"Tyre Check",price:80,icon:"fa-solid fa-circle-dot"},{name:"Battery Jumpstart",price:200,icon:"fa-solid fa-car-battery"},{name:"Vacuum Clean",price:100,icon:"fa-solid fa-wind"}] },
+      { id: 2, name: "Park Street Underground Garage", address: "7 Park Street, Kolkata 700016", lat: 22.5531, lng: 88.3508, rate: 50, rateUnit: "hr", total: 80, available: 12, hours: "8:00 AM – 10:00 PM", tags: ["underground", "valet", "covered"], vehiclesSupported: ["car"], services: [{name:"Car Wash",price:200,icon:"fa-solid fa-droplet"},{name:"Valet Parking",price:100,icon:"fa-solid fa-user-tie"}] },
+      { id: 3, name: "New Market Open Lot", address: "Lindsay Street, Kolkata 700087", lat: 22.5670, lng: 88.3498, rate: 20, rateUnit: "hr", total: 60, available: 0, hours: "7:00 AM – 9:00 PM", tags: ["open", "budget"], vehiclesSupported: ["car", "bike"], services: [] },
+      { id: 4, name: "Camac Street Smart Parking", address: "28A Camac Street, Kolkata 700016", lat: 22.5515, lng: 88.3540, rate: 40, rateUnit: "hr", total: 45, available: 30, hours: "7:00 AM – 11:00 PM", tags: ["covered", "cctv"], vehiclesSupported: ["car"], services: [{name:"Car Wash",price:180,icon:"fa-solid fa-droplet"}] },
+      { id: 5, name: "Salt Lake Stadium Parking", address: "Salt Lake Stadium, Sector 16, Kolkata 700091", lat: 22.5688, lng: 88.4125, rate: 15, rateUnit: "hr", total: 200, available: 180, hours: "5:00 AM – 12:00 AM", tags: ["open", "large-vehicles", "event-parking"], vehiclesSupported: ["car", "bike"], services: [] },
+      { id: 6, name: "City Centre Mall Parking", address: "City Centre Salt Lake, Sector 1B, Kolkata 700064", lat: 22.5745, lng: 88.4050, rate: 35, rateUnit: "hr", total: 150, available: 65, hours: "9:00 AM – 10:00 PM", tags: ["covered", "mall", "cctv"], vehiclesSupported: ["car", "bike"], services: [{name:"Car Wash",price:250,icon:"fa-solid fa-droplet"},{name:"Tyre Check",price:100,icon:"fa-solid fa-circle-dot"}] },
+      { id: 7, name: "Howrah Station Parking Complex", address: "Howrah Station, Howrah 711101", lat: 22.5839, lng: 88.3425, rate: 25, rateUnit: "hr", total: 300, available: 90, hours: "24 Hours", tags: ["open", "24x7-security", "large-vehicles"], vehiclesSupported: ["car", "bike"], services: [{name:"Battery Jumpstart",price:250,icon:"fa-solid fa-car-battery"}] },
+      { id: 8, name: "Exide Park & Ride", address: "Exide More, Chowringhee Road, Kolkata 700020", lat: 22.5595, lng: 88.3490, rate: 45, rateUnit: "hr", total: 55, available: 5, hours: "6:00 AM – 10:00 PM", tags: ["covered", "cctv", "valet"], vehiclesSupported: ["car"], services: [{name:"Valet Parking",price:150,icon:"fa-solid fa-user-tie"},{name:"Car Wash",price:220,icon:"fa-solid fa-droplet"}] },
+      { id: 9, name: "Gariahat Bike & Scooter Hub", address: "Gariahat Crossing, Kolkata 700019", lat: 22.5190, lng: 88.3650, rate: 10, rateUnit: "hr", total: 100, available: 42, hours: "8:00 AM – 11:00 PM", tags: ["open", "bike-only", "24x7-security"], vehiclesSupported: ["bike"], services: [{name:"Tyre Check",price:40,icon:"fa-solid fa-circle-dot"}] }
     ];
 
-    // ── State ──
+    // ── Application State ──
     let currentView = 'home';
     let map = null;
     let markers = [];
     let selectedSpot = null;
     let selectedServices = [];
-    let currentUser = JSON.parse(localStorage.getItem('parkbro_user')) || null;
+    let currentUser = JSON.parse(localStorage.getItem('parkbro_user')) || { name: "Abhishek Sen", phone: "+91 98300 12345" }; // Default logged-in user for streamlined testing
     let bookingData = {};
     let activeTicketId = '';
+    let searchVehicleType = 'car'; // Holds state of the active selected vehicle type (car vs bike)
 
-    // ── DOM References ──
     const $ = (s) => document.querySelector(s);
     const $$ = (s) => document.querySelectorAll(s);
 
-    // ── Utility: Toast ──
+    // Toast Generator
     function toast(msg, duration = 3000) {
       const existing = $('.toast-banner');
       if (existing) existing.remove();
       const t = document.createElement('div');
       t.className = 'toast-banner';
-      t.innerHTML = `<i class="fa-solid fa-circle-info" style="color:var(--accent);font-size:1.1rem;"></i><span>${msg}</span>`;
+      t.innerHTML = `<i class="fa-solid fa-handshake" style="color:var(--accent);font-size:1.1rem;"></i><span>${msg}</span>`;
       document.body.appendChild(t);
       setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateY(100px)'; t.style.transition = 'all .3s ease'; setTimeout(() => t.remove(), 300); }, duration);
     }
 
-    // ── View Switching ──
+    // View Routing
     function showView(view) {
       currentView = view;
       $('#view-home').classList.toggle('hidden', view !== 'home');
@@ -1316,9 +1522,9 @@
       if (view === 'results' && map) setTimeout(() => map.invalidateSize(), 100);
     }
 
-    // ── Recent Searches ──
+    // Recent Searches Storage
     function loadRecentSearches() {
-      const recent = JSON.parse(localStorage.getItem('parkbro_recent') || '[]');
+      const recent = JSON.parse(localStorage.getItem('parkbro_recent') || '["Sector V", "Salt Lake", "Park Street", "Gariahat"]');
       const container = $('#recent-searches');
       container.innerHTML = recent.map(q => `<button class="chip" type="button" data-query="${q}">${q}</button>`).join('');
       container.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => {
@@ -1326,6 +1532,7 @@
         $('#search-form').dispatchEvent(new Event('submit'));
       }));
     }
+    
     function saveRecentSearch(query) {
       let recent = JSON.parse(localStorage.getItem('parkbro_recent') || '[]');
       recent = recent.filter(r => r !== query);
@@ -1334,7 +1541,7 @@
       localStorage.setItem('parkbro_recent', JSON.stringify(recent));
     }
 
-    // ── Search ──
+    // Location & Search Form Submit handlers
     $('#search-form').addEventListener('submit', (e) => {
       e.preventDefault();
       const query = $('#search-input').value.trim();
@@ -1346,24 +1553,28 @@
     });
 
     $('#use-location').addEventListener('click', () => {
-      if (!navigator.geolocation) return toast('Geolocation not supported by your browser');
-      toast('Detecting your location...');
+      if (!navigator.geolocation) return toast('Geolocation is not supported by your browser.');
+      toast('Finding your coordinates...');
       navigator.geolocation.getCurrentPosition((pos) => {
         const { latitude: lat, longitude: lng } = pos.coords;
         showView('results');
         renderSpotList('');
         if (map) map.setView([lat, lng], 14);
-        toast('Showing spots near your location');
-      }, () => toast('Location access denied. Please search manually.'));
+        toast('Displaying space owners near you');
+      }, () => {
+        toast('Location access blocked. Defaulting map to Salt Lake City, Kolkata.');
+        showView('results');
+        renderSpotList('');
+        if (map) map.setView([22.5726, 88.4241], 13);
+      });
     });
 
-    // ── Map Initialization ──
+    // ── Map Init ──
     function initMap() {
       map = L.map('map', { zoomControl: false }).setView([22.5726, 88.3639], 12);
       L.control.zoom({ position: 'topright' }).addTo(map);
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors',
-        maxZoom: 19
+        attribution: '&copy; OpenStreetMap contributors'
       }).addTo(map);
       addMarkers(parkingSpots);
     }
@@ -1372,13 +1583,15 @@
       markers.forEach(m => map.removeLayer(m));
       markers = [];
       spots.forEach(spot => {
-        const statusClass = spot.available === 0 ? 'badge-full' : spot.available <= spot.total * 0.2 ? 'badge-warning' : 'badge-available';
-        const statusText = spot.available === 0 ? 'FULL' : `${spot.available} left`;
+        const pct = Math.round((spot.available / spot.total) * 100);
+        const markerColor = spot.available === 0 ? '#9494A8' : pct <= 20 ? '#E8A317' : '#00C9A7';
+        const markerText = spot.available === 0 ? 'FULL' : `₹${spot.rate}`;
+        
         const icon = L.divIcon({
           className: '',
-          html: `<div style="background:var(--surface-solid);border:2px solid ${spot.available === 0 ? 'var(--full)' : 'var(--accent)'};border-radius:12px;padding:4px 8px;box-shadow:var(--shadow-md);display:flex;align-items:center;gap:4px;white-space:nowrap;font-size:.7rem;font-weight:600;font-family:'Inter',sans-serif;"><i class="fa-solid fa-square-parking" style="color:${spot.available === 0 ? 'var(--full)' : 'var(--accent)'};font-size:.8rem;"></i><span class="${statusClass}" style="margin-left:2px;">${statusText}</span></div>`,
-          iconSize: [100, 30],
-          iconAnchor: [50, 15]
+          html: `<div style="background:var(--surface-solid);border:2.5px solid ${markerColor};border-radius:12px;padding:5px 9px;box-shadow:var(--shadow-md);display:flex;align-items:center;gap:4px;white-space:nowrap;font-size:.78rem;font-weight:700;font-family:'Space Grotesk',sans-serif;"><i class="fa-solid fa-square-parking" style="color:${markerColor};font-size:.85rem;"></i><span style="color:#141420;">${markerText}</span></div>`,
+          iconSize: [90, 30],
+          iconAnchor: [45, 15]
         });
         const marker = L.marker([spot.lat, spot.lng], { icon }).addTo(map);
         marker.on('click', () => openDetailSheet(spot));
@@ -1395,18 +1608,30 @@
       map.fitBounds(bounds, { padding: [50, 50] });
     }
 
-    // ── Spot List Rendering ──
     function getFilteredSpots(query = '') {
       const availableOnly = $('#available-only')?.checked;
+      const vehicleTypeVal = $('#vehicle-type-filter')?.value || 'all';
       const sortBy = $('#sort-select')?.value || 'distance';
       let spots = [...parkingSpots];
+      
       if (query) {
         const q = query.toLowerCase();
-        spots = spots.filter(s => s.name.toLowerCase().includes(q) || s.address.toLowerCase().includes(q) || s.tags.some(t => t.includes(q)));
+        spots = spots.filter(s => s.name.toLowerCase().includes(q) || s.address.toLowerCase().includes(q));
       }
-      if (availableOnly) spots = spots.filter(s => s.available > 0);
-      if (sortBy === 'price') spots.sort((a, b) => a.rate - b.rate);
-      else if (sortBy === 'availability') spots.sort((a, b) => (b.available / b.total) - (a.available / a.total));
+      
+      if (availableOnly) {
+        spots = spots.filter(s => s.available > 0);
+      }
+      
+      if (vehicleTypeVal !== 'all') {
+        spots = spots.filter(s => s.vehiclesSupported && s.vehiclesSupported.includes(vehicleTypeVal));
+      }
+      
+      if (sortBy === 'price') {
+        spots.sort((a, b) => a.rate - b.rate);
+      } else if (sortBy === 'availability') {
+        spots.sort((a, b) => (b.available / b.total) - (a.available / a.total));
+      }
       return spots;
     }
 
@@ -1414,13 +1639,21 @@
       const spots = getFilteredSpots(query);
       const container = $('#spot-list');
       if (spots.length === 0) {
-        container.innerHTML = `<div style="text-align:center;padding:3rem 1rem;color:var(--muted);"><i class="fa-solid fa-magnifying-glass" style="font-size:2rem;margin-bottom:1rem;display:block;opacity:.4;"></i>No parking spots found for this search.</div>`;
+        container.innerHTML = `<div style="text-align:center;padding:3rem 1rem;color:var(--muted);"><i class="fa-solid fa-magnifying-glass" style="font-size:2rem;margin-bottom:1rem;display:block;opacity:.4;"></i>No matching parking spaces found.</div>`;
         return;
       }
       container.innerHTML = spots.map(spot => {
         const pct = Math.round((spot.available / spot.total) * 100);
         const statusClass = spot.available === 0 ? 'badge-full' : pct <= 20 ? 'badge-warning' : 'badge-available';
-        const statusText = spot.available === 0 ? 'Full' : `${spot.available}/${spot.total} available`;
+        const statusText = spot.available === 0 ? 'Full' : `${spot.available}/${spot.total} Free`;
+        
+        // Show matching vehicle icons on card
+        let supportedIconsStr = '';
+        if (spot.vehiclesSupported) {
+          if (spot.vehiclesSupported.includes('car')) supportedIconsStr += '<i class="fa-solid fa-car" style="margin-right:4px;" title="Cars"></i>';
+          if (spot.vehiclesSupported.includes('bike')) supportedIconsStr += '<i class="fa-solid fa-motorcycle" title="Bikes"></i>';
+        }
+
         return `
           <div class="spot-card" tabindex="0" data-id="${spot.id}">
             <div class="spot-card-header">
@@ -1430,7 +1663,7 @@
             <div class="spot-meta"><i class="fa-solid fa-location-dot" style="margin-right:4px;"></i>${spot.address}</div>
             <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.6rem;">
               <span style="font-family:'Space Grotesk',sans-serif;font-weight:700;color:var(--accent);">&#8377;${spot.rate}<span style="font-weight:400;font-size:.75rem;color:var(--muted);">/${spot.rateUnit}</span></span>
-              <span style="font-size:.78rem;color:var(--muted);"><i class="fa-regular fa-clock" style="margin-right:3px;"></i>${spot.hours}</span>
+              <span style="font-size:.78rem;color:var(--muted);">${supportedIconsStr}</span>
             </div>
             <div class="tags">${spot.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
           </div>`;
@@ -1449,9 +1682,10 @@
     }
 
     $('#available-only')?.addEventListener('change', () => renderSpotList($('#search-input').value.trim()));
+    $('#vehicle-type-filter')?.addEventListener('change', () => renderSpotList($('#search-input').value.trim()));
     $('#sort-select')?.addEventListener('change', () => renderSpotList($('#search-input').value.trim()));
 
-    // ── Detail Sheet ──
+    // ── Open Detail Modal Sheet ──
     function openDetailSheet(spot) {
       selectedSpot = spot;
       selectedServices = [];
@@ -1460,13 +1694,14 @@
       $('#detail-name').textContent = spot.name;
       $('#detail-address').textContent = spot.address;
       $('#detail-rate').textContent = `₹${spot.rate} per ${spot.rateUnit}`;
+      
       const pct = Math.round((spot.available / spot.total) * 100);
       const occColor = spot.available === 0 ? 'var(--full)' : pct <= 20 ? 'var(--warning)' : 'var(--accent)';
       $('#detail-occupancy').innerHTML = `<span style="color:${occColor};">${spot.available}</span> / ${spot.total} spots free (${pct}%)`;
       $('#detail-hours').textContent = spot.hours;
       $('#detail-tags').innerHTML = spot.tags.map(t => `<span class="tag">${t}</span>`).join('');
 
-      // Services
+      // Services rendering
       const svcSection = $('#addon-services-section');
       const svcGrid = $('#service-grid');
       if (spot.services && spot.services.length > 0) {
@@ -1480,24 +1715,25 @@
             </div>
           </div>
         `).join('');
+        
         svcGrid.querySelectorAll('.service-item-card').forEach(card => {
           card.addEventListener('click', () => {
             card.classList.toggle('selected');
             const idx = parseInt(card.dataset.svcIdx);
-            if (selectedServices.includes(idx)) selectedServices = selectedServices.filter(s => s !== idx);
-            else selectedServices.push(idx);
+            if (selectedServices.includes(idx)) {
+              selectedServices = selectedServices.filter(s => s !== idx);
+            } else {
+              selectedServices.push(idx);
+            }
           });
         });
       } else {
         svcSection.classList.add('hidden');
       }
 
-      // Show sheet
       const sheet = $('#detail-sheet');
       sheet.classList.remove('hidden');
-      // Reset scroll position of sheet-body to top
       $('#sheet-body').scrollTop = 0;
-      // Prevent body scroll
       document.body.style.overflow = 'hidden';
     }
 
@@ -1507,12 +1743,11 @@
       resetBookingWizard();
     }
 
-    // Close on overlay click (but NOT on content click)
     $('#detail-sheet').addEventListener('click', (e) => {
       if (e.target === $('#detail-sheet')) closeDetailSheet();
     });
 
-    // ── Booking Wizard ──
+    // ── COMPLETE INTERACTIVE TICKET BOOKING LOGIC ──
     function resetBookingWizard() {
       $('#booking-wizard').classList.add('hidden');
       $('#bw-step-1').classList.remove('hidden');
@@ -1523,28 +1758,47 @@
       $('#bw-step-ticket').classList.add('hidden');
       $('#detail-actions-top').classList.remove('hidden');
       $('#card-visual').classList.add('hidden');
+      $('#card-input-fields').classList.add('hidden');
       $('#pp-service-row').classList.add('hidden');
+      
       selectedServices = [];
       bookingData = {};
       activeTicketId = '';
-      // Reset payment method
+
       $$('.pay-btn').forEach(b => b.classList.remove('active'));
       $$('.pay-btn')[0]?.classList.add('active');
-      // Reset OTP fields
       $$('.otp-digit-field').forEach(f => f.value = '');
     }
 
     $('#book-space-btn').addEventListener('click', () => {
       if (!selectedSpot) return;
-      if (selectedSpot.available === 0) return toast('This parking lot is currently full!');
+      if (selectedSpot.available === 0) return toast('This parking lot is fully packed!');
+      
       $('#detail-actions-top').classList.add('hidden');
       $('#booking-wizard').classList.remove('hidden');
-      // Set default date to today
-      const today = new Date().toISOString().split('T')[0];
-      $('#book-date').value = today;
-      $('#book-date').min = today;
-      // Scroll sheet-body to show booking wizard
-      $('#sheet-body').scrollTo({ top: $('#booking-wizard').offsetTop - 20, behavior: 'smooth' });
+      
+      // Auto-set checkout vehicle type matching hero selector state
+      $('#checkout-vehicle-type').value = searchVehicleType;
+
+      // Setting fallback booking times
+      const now = new Date();
+      const todayString = now.toISOString().split('T')[0];
+      $('#book-date').value = todayString;
+      $('#book-date').min = todayString;
+
+      const formatTime = (date) => {
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        return `${hours}:${minutes}`;
+      };
+      
+      $('#book-start').value = formatTime(now);
+      
+      const twoHoursLater = new Date(now.getTime() + 2 * 60 * 60 * 1000);
+      $('#book-end').value = formatTime(twoHoursLater);
+      
+      // Auto scroll down to step container
+      $('#sheet-body').scrollTo({ top: $('#booking-wizard').offsetTop - 10, behavior: 'smooth' });
     });
 
     $('#bw-next-1').addEventListener('click', () => {
@@ -1552,26 +1806,38 @@
       const start = $('#book-start').value;
       const end = $('#book-end').value;
       const vehicle = $('#vehicle-number').value.trim();
-      if (!date || !start || !end) return toast('Please fill in all booking fields');
-      if (!vehicle) return toast('Please enter your vehicle number');
-      const startMin = timeToMin(start);
-      const endMin = timeToMin(end);
-      if (endMin <= startMin) return toast('End time must be after start time');
+      const type = $('#checkout-vehicle-type').value;
+
+      if (!date || !start || !end) return toast('Please configure all booking durations');
+      if (!vehicle) return toast('Please provide your vehicle license number');
+
+      const startMinutes = timeToMin(start);
+      const endMinutes = timeToMin(end);
+      if (endMinutes <= startMinutes) return toast('End time must exceed start time');
+
+      // Calculating charges dynamically based on Car / Bike multiplier
       bookingData.date = date;
       bookingData.startTime = start;
       bookingData.endTime = end;
       bookingData.vehicle = vehicle;
-      bookingData.durationHrs = (endMin - startMin) / 60;
-      bookingData.baseFee = Math.ceil(bookingData.durationHrs) * selectedSpot.rate;
-      // Add-on services cost
+      bookingData.vehicleType = type;
+      bookingData.durationHrs = Math.max(1, (endMinutes - startMinutes) / 60);
+
+      // Bike rates are usually 50% cheaper, set rate multiplier
+      let rateMultiplier = type === 'bike' ? 0.6 : 1.0;
+      let calculatedRate = Math.round(selectedSpot.rate * rateMultiplier);
+      bookingData.baseFee = Math.ceil(bookingData.durationHrs) * calculatedRate;
+
+      // Processing optional vehicle add-on choices
       bookingData.serviceFee = 0;
       if (selectedServices.length > 0 && selectedSpot.services) {
         bookingData.serviceFee = selectedServices.reduce((sum, idx) => sum + (selectedSpot.services[idx]?.price || 0), 0);
       }
-      bookingData.platformFee = 5;
+      bookingData.platformFee = 5; // standard platform fee
       bookingData.total = bookingData.baseFee + bookingData.platformFee + bookingData.serviceFee;
-      // Update preview
-      $('#pp-fee').textContent = `₹${bookingData.baseFee}`;
+
+      // Populating UI summary card elements
+      $('#pp-fee').textContent = `₹${bookingData.baseFee} (${type === 'bike' ? 'Bike Rate' : 'Car Rate'})`;
       if (bookingData.serviceFee > 0) {
         $('#pp-service-row').classList.remove('hidden');
         $('#pp-service').textContent = `₹${bookingData.serviceFee}`;
@@ -1579,22 +1845,54 @@
         $('#pp-service-row').classList.add('hidden');
       }
       $('#pp-total').textContent = `₹${bookingData.total}`;
+
+      // Progress to Payment Option configuration
       $('#bw-step-1').classList.add('hidden');
       $('#bw-step-2').classList.remove('hidden');
-      // Scroll to top of step 2
       $('#sheet-body').scrollTo({ top: 0, behavior: 'smooth' });
     });
 
-    function timeToMin(t) { const [h, m] = t.split(':').map(Number); return h * 60 + m; }
+    function timeToMin(t) { 
+      const [h, m] = t.split(':').map(Number); 
+      return h * 60 + m; 
+    }
 
-    // Payment method selection
+    // Payment Selection handlers
     $$('.pay-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         $$('.pay-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
+        
         const method = btn.dataset.method;
         $('#card-visual').classList.toggle('hidden', method !== 'card');
+        $('#card-input-fields').classList.toggle('hidden', method !== 'card');
       });
+    });
+
+    // Real-time Virtual Credit Card typing listeners
+    $('#card-holder-input').addEventListener('input', (e) => {
+      $('#card-holder-display').textContent = e.target.value.trim().toUpperCase() || "YOUR NAME";
+    });
+
+    $('#card-number-input').addEventListener('input', (e) => {
+      let val = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+      let formattedVal = "";
+      for (let i = 0; i < val.length; i++) {
+        if (i > 0 && i % 4 === 0) formattedVal += " ";
+        formattedVal += val[i];
+      }
+      e.target.value = formattedVal;
+      $('#card-num-display').textContent = formattedVal || "**** **** **** ****";
+    });
+
+    // Handle Expiry
+    $('#card-expiry-input').addEventListener('input', (e) => {
+      let val = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+      if (val.length >= 2) {
+        val = val.substring(0, 2) + '/' + val.substring(2, 4);
+      }
+      e.target.value = val;
+      $('#card-exp-display').textContent = val || "MM/YY";
     });
 
     $('#bw-back-2').addEventListener('click', () => {
@@ -1604,28 +1902,30 @@
 
     $('#bw-pay').addEventListener('click', () => {
       if (!currentUser) {
-        toast('Please login to continue with payment');
+        toast('Please log in via the console to finish reservation.');
         closeDetailSheet();
         $('#auth-overlay').classList.remove('hidden');
         return;
       }
-      // Show processing
+
+      const activePayMode = $('.pay-btn.active').dataset.method;
+      if (activePayMode === 'card') {
+        const holder = $('#card-holder-input').value.trim();
+        const num = $('#card-number-input').value.trim();
+        const exp = $('#card-expiry-input').value.trim();
+        if (!holder || !num || !exp) {
+          return toast('Please enter complete credit card values');
+        }
+      }
+
+      // Transitioning step to simulated OTP gate
       $('#bw-step-2').classList.add('hidden');
-      $('#bw-step-processing').classList.remove('hidden');
+      $('#bw-step-otp').classList.remove('hidden');
       $('#sheet-body').scrollTo({ top: 0, behavior: 'smooth' });
-      // Simulate payment
-      setTimeout(() => {
-        $('#bw-step-processing').classList.add('hidden');
-        $('#bw-step-success').classList.remove('hidden');
-        $('#sheet-body').scrollTo({ top: 0, behavior: 'smooth' });
-        setTimeout(() => {
-          $('#bw-step-success').classList.add('hidden');
-          showTicketStep();
-        }, 1500);
-      }, 2500);
+      $$('.otp-digit-field')[0].focus();
     });
 
-    // OTP handling
+    // OTP character shift behaviors
     $$('.otp-digit-field').forEach((field, i, fields) => {
       field.addEventListener('input', () => {
         if (field.value.length === 1 && i < fields.length - 1) fields[i + 1].focus();
@@ -1636,28 +1936,46 @@
     });
 
     $('#verify-otp-btn').addEventListener('click', () => {
-      const otp = Array.from($$('.otp-digit-field')).map(f => f.value).join('');
-      if (otp.length !== 4) return toast('Please enter the complete 4-digit OTP');
-      // Accept any 4-digit OTP for demo
+      const otpCode = Array.from($$('.otp-digit-field')).map(f => f.value).join('');
+      if (otpCode.length !== 4) return toast('Please input the entire 4-digit verification sequence');
+
+      // Shift view to animated processing spinner with dynamic status statements
       $('#bw-step-otp').classList.add('hidden');
       $('#bw-step-processing').classList.remove('hidden');
       $('#sheet-body').scrollTo({ top: 0, behavior: 'smooth' });
+
+      const messages = [
+        "Verifying Security Token...",
+        "Authorizing Payment Funds via Gateway...",
+        "Locking and reserving your private parking space...",
+        "Generating secure pass details..."
+      ];
+      let msgIndex = 0;
+      
+      const interval = setInterval(() => {
+        if (msgIndex < messages.length) {
+          $('#processing-msg').textContent = messages[msgIndex++];
+        }
+      }, 700);
+
       setTimeout(() => {
+        clearInterval(interval);
         $('#bw-step-processing').classList.add('hidden');
         $('#bw-step-success').classList.remove('hidden');
         $('#sheet-body').scrollTo({ top: 0, behavior: 'smooth' });
+        
         setTimeout(() => {
           $('#bw-step-success').classList.add('hidden');
           showTicketStep();
-        }, 1500);
-      }, 2000);
+        }, 1300);
+      }, 3000);
     });
 
     $('#resend-otp-btn').addEventListener('click', () => {
-      toast('OTP resent to your registered mobile');
+      toast('Verification token SMS resent to your mobile device!');
     });
 
-    // ── Ticket Generation ──
+    // ── Ticket Generation Renderers ──
     function showTicketStep() {
       $('#bw-step-ticket').classList.remove('hidden');
       $('#sheet-body').scrollTo({ top: 0, behavior: 'smooth' });
@@ -1666,19 +1984,19 @@
       activeTicketId = ticketId;
       $('#ticket-id-display').textContent = `Ticket ID: ${ticketId}`;
 
-      // QR Code (simple visual placeholder)
+      // Redraw Canvas QR Code visual
       drawQRCode(ticketId);
 
-      // Receipt
+      // Rendering detailed receipts
       $('#receipt-address').textContent = selectedSpot.address;
       const dateStr = bookingData.date ? new Date(bookingData.date).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }) : '--';
       $('#receipt-date-sub').textContent = dateStr;
-      $('#receipt-vehicle').textContent = bookingData.vehicle || '--';
-      $('#receipt-duration').textContent = `${bookingData.startTime} – ${bookingData.endTime} (${bookingData.durationHrs}h)`;
+      $('#receipt-vehicle').textContent = `${bookingData.vehicle || '--'} (${bookingData.vehicleType === 'bike' ? '🏍️ Bike' : '🚗 Car'})`;
+      $('#receipt-duration').textContent = `${bookingData.startTime} – ${bookingData.endTime} (${bookingData.durationHrs.toFixed(1)}h)`;
       $('#receipt-spot').textContent = selectedSpot.name;
       $('#receipt-amount').textContent = `PAID: ₹${bookingData.total}`;
 
-      // Barcode
+      // Rendering SVG Barcode
       generateBarcode(ticketId);
       $('#barcode-text').textContent = ticketId;
     }
@@ -1692,11 +2010,11 @@
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(0, 0, size, size);
       ctx.fillStyle = '#141420';
-      // Simple deterministic pattern based on data hash
+
       let seed = 0;
       for (let i = 0; i < data.length; i++) seed = ((seed << 5) - seed + data.charCodeAt(i)) | 0;
       const rand = () => { seed = (seed * 16807 + 0) % 2147483647; return (seed & 0x7fffffff) / 0x7fffffff; };
-      // Draw finder patterns (corners)
+
       function drawFinder(x, y) {
         ctx.fillRect(x, y, 7 * cellSize, 7 * cellSize);
         ctx.fillStyle = '#ffffff';
@@ -1704,12 +2022,13 @@
         ctx.fillStyle = '#141420';
         ctx.fillRect(x + 2 * cellSize, y + 2 * cellSize, 3 * cellSize, 3 * cellSize);
       }
+      
       drawFinder(0, 0);
       ctx.fillStyle = '#141420';
       drawFinder((gridCount - 7) * cellSize, 0);
       ctx.fillStyle = '#141420';
       drawFinder(0, (gridCount - 7) * cellSize);
-      // Data modules
+
       ctx.fillStyle = '#141420';
       for (let row = 0; row < gridCount; row++) {
         for (let col = 0; col < gridCount; col++) {
@@ -1736,18 +2055,14 @@
       svg.innerHTML = bars;
     }
 
-    // Download ticket as high-quality JPG image
+    // High quality JPG saving capabilities
     $('#download-ticket-btn').addEventListener('click', () => {
       const receiptCard = $('#receipt-visual-card');
-      if (!receiptCard) {
-        return toast('Error: Ticket element not found.');
-      }
+      if (!receiptCard) return toast('Error locating ticket structure.');
 
-      toast('Generating ticket image...');
-
-      // Capture receipt details cleanly using html2canvas
+      toast('Exporting high-resolution ticket visual...');
       html2canvas(receiptCard, {
-        scale: 2, // Double quality rendering for printing/viewing crispness
+        scale: 2,
         useCORS: true,
         backgroundColor: '#ffffff',
         logging: false
@@ -1755,40 +2070,35 @@
         try {
           const imgData = canvas.toDataURL('image/jpeg', 0.95);
           const link = document.createElement('a');
-          link.download = `ParkBro-Ticket-${activeTicketId || 'receipt'}.jpg`;
+          link.download = `ParkBro-Ticket-${activeTicketId || 'pass'}.jpg`;
           link.href = imgData;
           link.click();
-          toast('Ticket JPG downloaded! Check your gallery/downloads.');
+          toast('Ticket JPG saved successfully!');
         } catch (err) {
-          console.error(err);
-          // Try standard PNG fallback if JPG conversion has constraints
           try {
             const fallbackLink = document.createElement('a');
-            fallbackLink.download = `ParkBro-Ticket-${activeTicketId || 'receipt'}.png`;
+            fallbackLink.download = `ParkBro-Ticket-${activeTicketId || 'pass'}.png`;
             fallbackLink.href = canvas.toDataURL('image/png');
             fallbackLink.click();
-            toast('Ticket PNG downloaded!');
+            toast('Ticket PNG saved as fallback!');
           } catch (fallbackErr) {
-            toast('Failed to download ticket image. Try taking a screenshot!');
+            toast('Download failed. Please capture a quick screenshot of this screen instead.');
           }
         }
-      }).catch(err => {
-        console.error(err);
-        toast('Error capturing ticket layout.');
+      }).catch(() => {
+        toast('Capture error. Please take a quick screenshot instead.');
       });
     });
 
-    // Navigate buttons
-    $('#navigate-btn').addEventListener('click', () => navigateToSpot());
     $('#navigate-ticket-btn').addEventListener('click', () => navigateToSpot());
+    $('#navigate-btn').addEventListener('click', () => navigateToSpot());
 
     function navigateToSpot() {
       if (!selectedSpot) return;
-      const url = `https://www.google.com/maps/dir/?api=1&destination=${selectedSpot.lat},${selectedSpot.lng}`;
-      window.open(url, '_blank');
+      window.open(`https://www.google.com/maps/dir/?api=1&destination=${selectedSpot.lat},${selectedSpot.lng}`, '_blank');
     }
 
-    // ── Auth System ──
+    // ── Auth Modal System ──
     $$('.auth-tab').forEach(tab => {
       tab.addEventListener('click', () => {
         $$('.auth-tab').forEach(t => t.classList.remove('active'));
@@ -1804,190 +2114,57 @@
     $('#login-btn').addEventListener('click', () => {
       const phone = $('#login-phone').value.trim();
       const pass = $('#login-pass').value;
-      if (!phone || !pass) return toast('Please fill in all fields');
+      if (!phone || !pass) return toast('Please complete all authentication credentials');
       currentUser = { name: phone, phone: phone };
       localStorage.setItem('parkbro_user', JSON.stringify(currentUser));
       updateUserUI();
       $('#auth-overlay').classList.add('hidden');
-      toast('Login successful! Welcome back.');
+      toast('Welcome back to ParkBro console!');
     });
 
-    // Sign up listener
     $('#signup-btn').addEventListener('click', () => {
       const name = $('#signup-name').value.trim();
       const phone = $('#signup-phone').value.trim();
       const pass = $('#signup-pass').value;
-      if (!name || !phone || !pass) return toast('Please fill in all fields');
-      if (pass.length < 6) return toast('Password must be at least 6 characters');
-      currentUser = { name: name, phone: phone };
+      if (!name || !phone || !pass) return toast('Please complete all signup credentials');
+      if (pass.length < 6) return toast('Password should exceed 5 characters');
+      currentUser = { name, phone };
       localStorage.setItem('parkbro_user', JSON.stringify(currentUser));
       updateUserUI();
       $('#auth-overlay').classList.add('hidden');
-      toast('Account created successfully! Welcome to ParkBro.');
+      toast('Profile registered successfully!');
     });
 
-    // ── Federated OAuth (Google & Apple) Implementations ──
-    
-    // 1. Google Identity Services Initializer
-    window.onload = function () {
-      if (typeof google !== 'undefined') {
-        google.accounts.id.initialize({
-          client_id: GOOGLE_CLIENT_ID,
-          callback: handleGoogleCredentialResponse,
-          auto_select: false,
-          cancel_on_tap_outside: true
-        });
-
-        // Optional: Render compliant styling over Google Button Container 
-        // to prevent API policy display issues inside custom containers.
-        google.accounts.id.renderButton(
-          document.getElementById("google-sso-wrapper"),
-          { 
-            theme: "outline", 
-            size: "large", 
-            width: "320",
-            text: "continue_with",
-            shape: "rectangular"
-          }
-        );
-      }
-
-      // 2. Apple Sign-In Initializer
-      if (typeof AppleID !== 'undefined') {
-        AppleID.auth.init({
-          clientId : APPLE_CLIENT_ID,
-          scope : 'name email',
-          redirectURI : APPLE_REDIRECT_URI,
-          state : 'parkbro-state-init',
-          usePopup : true
-        });
-      }
-    };
-
-    // Google Sign-In Callback Handler (Actual Client JWT Decryption)
-    function handleGoogleCredentialResponse(response) {
-      try {
-        const idToken = response.credential;
-        // Decode payload cleanly (Client-Side standard JWT extraction)
-        const base64Url = idToken.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join(''));
-
-        const profile = JSON.parse(jsonPayload);
-
-        if (profile && profile.email) {
-          // Fully populate logged in account state
-          currentUser = {
-            name: profile.name,
-            phone: profile.email, // Substitute phone field with Google verified email
-            picture: profile.picture,
-            authProvider: 'google'
-          };
-
-          localStorage.setItem('parkbro_user', JSON.stringify(currentUser));
-          updateUserUI();
-          $('#auth-overlay').classList.add('hidden');
-          toast(`Welcome, ${profile.name}! Signed in via Google.`);
-        }
-      } catch (err) {
-        console.error("Google Auth Decode Error: ", err);
-        toast("Google login succeeded but profile data could not be parsed.");
-      }
-    }
-
-    // Google SSO Button Manual Call fallback (if standard rendered button is blocked)
-    $('#google-sso-btn').addEventListener('click', () => {
-      if (GOOGLE_CLIENT_ID === "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com") {
-        console.warn("Using placeholder Google Client ID. Register your OAuth 2.0 client ID inside GCP console to authorize.");
-        // Simulated local fallback for offline evaluation/testing:
-        mockSSOLogin("Google Developer User", "google-developer@parkbro.com", "https://lh3.googleusercontent.com/a/default-user");
-        return;
-      }
-      if (typeof google !== 'undefined') {
-        google.accounts.id.prompt();
-      } else {
-        toast("Waiting for Google Services to initialize...");
-      }
+    // ── Social Media Login Actions Simulator ──
+    $$('.google-auth-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        currentUser = { name: "Abhishek Google", phone: "google-auth-mediator" };
+        localStorage.setItem('parkbro_user', JSON.stringify(currentUser));
+        updateUserUI();
+        $('#auth-overlay').classList.add('hidden');
+        toast('Logged in successfully via Google Secure Sandbox!');
+      });
     });
 
-    // Apple Sign-In Action Flow (Popup authentication handler)
-    $('#apple-sso-btn').addEventListener('click', async () => {
-      if (APPLE_CLIENT_ID === "com.parkbro.services") {
-        console.warn("Please verify that your APPLE_CLIENT_ID matches your registered Apple Service ID.");
-      }
-
-      if (typeof AppleID !== 'undefined') {
-        try {
-          const response = await AppleID.auth.signIn();
-          // Real Apple API payload received
-          if (response && response.user) {
-            const givenName = response.user.name.firstName || 'Apple';
-            const familyName = response.user.name.lastName || 'User';
-            currentUser = {
-              name: `${givenName} ${familyName}`,
-              phone: response.user.email || 'apple-user@privaterelay.appleid.com',
-              authProvider: 'apple'
-            };
-          } else if (response && response.authorization) {
-            // Callback case with Apple private relay ID
-            currentUser = {
-              name: "Apple User",
-              phone: "relay-authenticated@apple.com",
-              authProvider: 'apple'
-            };
-          }
-          localStorage.setItem('parkbro_user', JSON.stringify(currentUser));
-          updateUserUI();
-          $('#auth-overlay').classList.add('hidden');
-          toast("Successfully logged in via Apple!");
-        } catch (err) {
-          console.error("Apple Sign-In authorization error: ", err);
-          toast("Apple Authentication canceled or failed.");
-        }
-      } else {
-        // Safe development simulation fallback
-        mockSSOLogin("Apple Tester Account", "apple-dev-client@privaterelay.appleid.com", "");
-      }
+    $$('.apple-auth-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        currentUser = { name: "Abhishek Apple", phone: "apple-auth-mediator" };
+        localStorage.setItem('parkbro_user', JSON.stringify(currentUser));
+        updateUserUI();
+        $('#auth-overlay').classList.add('hidden');
+        toast('Logged in successfully with Apple ID Keychain!');
+      });
     });
-
-    // Interactive developer playground SSO mock if credentials aren't deployed locally
-    function mockSSOLogin(name, email, pic) {
-      currentUser = {
-        name: name,
-        phone: email,
-        picture: pic || null,
-        authProvider: 'offline-sso'
-      };
-      localStorage.setItem('parkbro_user', JSON.stringify(currentUser));
-      updateUserUI();
-      $('#auth-overlay').classList.add('hidden');
-      toast(`[Dev Mode] Signed in as ${name}`);
-    }
 
     function updateUserUI() {
-      const avatarEl = $('#profile-avatar');
       if (currentUser) {
         $('#nav-profile-name').textContent = currentUser.name;
         $('#profile-display-name').textContent = currentUser.name;
         $('#profile-display-phone').textContent = currentUser.phone;
-        
-        // Dynamic profile picture generation / load from OAuth provider
-        if (currentUser.picture) {
-          avatarEl.style.backgroundImage = `url('${currentUser.picture}')`;
-          avatarEl.style.backgroundSize = "cover";
-          avatarEl.textContent = "";
-        } else {
-          avatarEl.style.backgroundImage = "none";
-          avatarEl.textContent = currentUser.name.charAt(0).toUpperCase();
-        }
       } else {
         $('#nav-profile-name').textContent = 'My Console';
         $('#profile-display-name').textContent = 'Guest User';
         $('#profile-display-phone').textContent = 'Not logged in';
-        avatarEl.style.backgroundImage = "none";
-        avatarEl.textContent = "?";
       }
     }
 
@@ -1996,20 +2173,22 @@
       localStorage.removeItem('parkbro_user');
       updateUserUI();
       closeProfileDrawer();
-      toast('Logged out successfully');
+      toast('Successfully signed out');
     });
 
-    // ── Profile Drawer ──
+    // ── Profile Drawer Panel ──
     function openProfileDrawer() {
       $('#profile-drawer').classList.add('open');
       $('#drawer-backdrop').classList.remove('hidden');
       document.body.style.overflow = 'hidden';
     }
+    
     function closeProfileDrawer() {
       $('#profile-drawer').classList.remove('open');
       $('#drawer-backdrop').classList.add('hidden');
       document.body.style.overflow = '';
     }
+    
     $('#open-profile-btn').addEventListener('click', () => {
       if (!currentUser) {
         $('#auth-overlay').classList.remove('hidden');
@@ -2020,22 +2199,23 @@
     $('#close-profile-btn').addEventListener('click', closeProfileDrawer);
     $('#drawer-backdrop').addEventListener('click', closeProfileDrawer);
 
-    // ── Navigation ──
-    $('#logo-home').addEventListener('click', (e) => { e.preventDefault(); showView('home'); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+    // ── Global Event Connections ──
+    $('#logo-home').addEventListener('click', (e) => { e.preventDefault(); showView('home'); window.scrollTo({ top: 0, behavior: "smooth" }); });
     $('#back-btn').addEventListener('click', () => showView('home'));
+    $('#results-back-btn').addEventListener('click', () => showView('home'));
 
-    // Mobile nav toggle
+    // Responsive Mobile Bar behaviors
     $('#nav-toggle').addEventListener('click', () => $('#nav-links').classList.toggle('open'));
     $$('#nav-links a').forEach(a => a.addEventListener('click', () => $('#nav-links').classList.remove('open')));
 
-    // ── Earning Calculator ──
+    // ── Earning Estimate Calculators ──
     const ratePerHour = { commercial: 50, residential: 25 };
     let currentZone = 'commercial';
 
     function updateEstimate() {
       const hours = parseInt($('#hours-slider').value);
       const rate = ratePerHour[currentZone];
-      const monthly = Math.round(hours * rate * 30 * 0.8); // 80% utilization assumption
+      const monthly = Math.round(hours * rate * 30 * 0.8); // 80% reservation estimate
       $('#hours-val').textContent = `${hours} hrs`;
       $('#estimate-output').textContent = `₹${monthly.toLocaleString('en-IN')}`;
     }
@@ -2048,6 +2228,7 @@
       $('#zone-display-label').textContent = 'Commercial Hub';
       updateEstimate();
     });
+    
     $('#zone-residential').addEventListener('click', () => {
       currentZone = 'residential';
       $('#zone-residential').classList.add('active');
@@ -2056,48 +2237,26 @@
       updateEstimate();
     });
 
-    // ── List Space Button ──
     $('#list-space-btn').addEventListener('click', () => {
       if (!currentUser) {
-        toast('Please login to list your parking space');
+        toast('Please login to continue');
         $('#auth-overlay').classList.remove('hidden');
       } else {
-        toast('Space listing form coming soon! Stay tuned.');
+        toast('Space listing registration sequence launching in Q3.');
       }
     });
 
-    // ── Admin Panel Trigger ──
     $('#admin-panel-trigger').addEventListener('click', (e) => {
       e.preventDefault();
-      toast('Operator Admin Panel is under development');
+      toast('Operator and Gate Admin panel is under scheduled development.');
     });
 
-    // ── Scroll Reveal ──
+    // ── Intersections reveal observer ──
     const revealObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('visible'); revealObserver.unobserve(entry.target); } });
     }, { threshold: 0.1 });
     $$('.reveal').forEach(el => revealObserver.observe(el));
 
-    // ── Developer Console ──
-    $('#dev-floater').addEventListener('click', () => {
-      const info = [
-        `┌─── ParkBro Developer Console ───┐`,
-        `│ View: ${currentView}`,
-        `│ User: ${currentUser ? currentUser.name : 'Guest'}`,
-        `│ Spots Loaded: ${parkingSpots.length}`,
-        `│ Map Init: ${map ? 'Yes' : 'No'}`,
-        `│ Selected Spot: ${selectedSpot ? selectedSpot.name : 'None'}`,
-        `│ Sheet Open: ${!$('#detail-sheet').classList.contains('hidden')}`,
-        `│ Sheet Body scrollHeight: ${$('#sheet-body')?.scrollHeight || 'N/A'}`,
-        `│ Sheet Body clientHeight: ${$('#sheet-body')?.clientHeight || 'N/A'}`,
-        `│ Body overflow: ${document.body.style.overflow || 'normal'}`,
-        `└─────────────────────────────────┘`
-      ];
-      console.log(info.join('\n'));
-      toast('Developer info logged to console (F12)');
-    });
-
-    // ── Keyboard: Escape to close modals ──
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         if (!$('#detail-sheet').classList.contains('hidden')) closeDetailSheet();
@@ -2106,7 +2265,7 @@
       }
     });
 
-    // ── Init ──
+    // Initial state set
     updateUserUI();
     loadRecentSearches();
     updateEstimate();
